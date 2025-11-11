@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Controller\Api;
+
+use App\DTO\RegisterDTO;
+use App\DTO\LoginDTO;
+use App\DTO\UserDTO;
+use App\Service\AuthService;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+class AuthController extends AbstractController
+{
+    /**
+     * Controller for User REGISTER and LOGIN operations.
+     * @param AuthService $authService 
+     * @param SerializerInterface $serializer Serializer for JSON to DTOs
+     * @param ValidatorInterface $validator Validator for DTOs
+     */
+    public function __construct(
+        private AuthService $authService,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator
+    ) {}
+
+    /**
+     * Register a new user.
+     *
+     * - Deserialize the JSON body to RegisterDTO.
+     * - Validate the DTO; if there are errors, respond with 400 and details.
+     * - Delegate creation to AuthService and return 201 with the id.
+     * 
+     * @param Request $request Request HTTP con JSON en el cuerpo
+     * @return JsonResponse Respuesta JSON con estado y datos mínimos
+     */
+    #[Route('/register', name: 'app_register', methods: ['POST'])]
+    public function register(Request $request): JsonResponse
+    {
+        $dto = $this->serializer->deserialize($request->getContent(), RegisterDTO::class, 'json');
+
+        $errors = $this->validator->validate($dto);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => (string) $errors], 400);
+        }
+
+        $user = $this->authService->register([
+            'email' => $dto->email,
+            'password' => $dto->password,
+            'name' => $dto->name
+        ]);
+
+        return $this->json(
+            ['message' => 'User created', 'user' => UserDTO::fromEntity($user)], 
+            201, 
+            [],
+            ['groups' => ['user:read']]
+        );
+    }
+
+
+    /**
+     * Login a user and return a JWT token.
+     *
+     * - Deserialize LoginDTO
+     * - Validate DTO
+     * - Delegate authentication to AuthService and return token
+     *
+     * @param Request $request JSON -> {"email":"...","password":"..."}
+     * @return JsonResponse {"token":"..."} or 400 in case of validation errors
+     */
+    #[Route('/login', name: 'app_login', methods: ['POST'])]
+    public function login(Request $request): JsonResponse
+    {
+        // Convertir JSON a DTO para separar la validación/forma de los datos
+        $dto = $this->serializer->deserialize($request->getContent(), LoginDTO::class, 'json');
+
+        // Validación del DTO
+        $errors = $this->validator->validate($dto);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => (string) $errors], 400);
+        }
+
+        // AuthService devuelve el token (o lanza una excepción/controla fallo internamente)
+        $token = $this->authService->login($dto->email, $dto->password);
+        return $this->json(['token' => $token], 200);
+    }
+
+    /**
+     * Logout endpoint (for JWT, this is typically handled on the client side)
+     * @return JsonResponse
+     */
+    #[Route('/logout', name: 'app_logout', methods: ['POST'])]
+    public function logout(): JsonResponse
+    {
+        $this->authService->logout();
+        return $this->json(['message' => 'Logged out successfully'], 204);
+    }
+
+}

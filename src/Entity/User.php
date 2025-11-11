@@ -7,7 +7,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -17,35 +16,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read', 'admin:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'admin:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'admin:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[Groups(['admin:read'])]
-    #[ORM\Column(type: Types::JSON)]
+    #[ORM\Column(type: Types::JSON, options: ['default' => '["ROLE_USER"]'])]
     private array $role = [];
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Groups(['user:read', 'admin:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $updated_at = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $is_active = false;
+
     public function __construct()
     {
-        $this->created_at = new \DateTimeImmutable();
-        $this->updated_at = new \DateTimeImmutable();
+        $this->created_at = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Madrid'));
+        $this->updated_at = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Madrid'));
+        $this->role = ['ROLE_USER'];
+        $this->is_active = false;
     }
 
     #[ORM\PreUpdate]
@@ -134,7 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->role;
-        $roles[] = 'ROLE_USER'; // Siempre tener ROLE_USER
+        $roles[] = 'ROLE_USER'; //Default role
         return array_unique($roles);
     }
 
@@ -146,5 +145,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->is_active;
+    }
+
+    public function setIsActive(bool $is_active): static
+    {
+        $this->is_active = $is_active;
+
+        return $this;
     }
 }

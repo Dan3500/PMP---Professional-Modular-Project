@@ -194,6 +194,7 @@ frontend/
 | role          | Array    | ["ROLE_ADMIN","ROLE_EDITOR","ROLE_USER"]       |
 | created_at    | Timestamp | Creation date      |
 | updated_at    | Timestamp | Update date      |
+| is_active    | Boolean | Active     |
 
 ### Post
 
@@ -229,14 +230,12 @@ frontend/
 - Implement `/register` endpoint with input validation.  
 - Implement `/login` endpoint with JWT authentication.  
 - Implement `/logout` endpoint.  
-- Write unit tests for register and login workflows.
 
 ### Frontend
 - Create login form component.  
 - Create register form component.  
 - Implement form validation and error handling.  
 - Guard private routes to ensure secure access.  
-- Write unit tests for form components.
 
 ---
 
