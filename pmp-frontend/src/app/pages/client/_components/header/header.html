@@ -1,1 +1,18 @@
-<p>header works!</p>
+<header class="app-header">
+  <div class="logo">PMP - Professional Modular Project</div>
+
+  <nav class="nav-links">
+    <a href="#">Home</a>
+    @if (!auth.isAuthenticated()) {
+      <a [routerLink]="['login']">Login</a>
+      <a href="#">Register</a>
+    }
+    @if (auth.isAuthenticated()) {
+      <a href="#">Profile</a>
+      <a (click)="logout()">Logout</a>
+    }
+    @if (auth.getRoles().includes('ROLE_ADMIN')) {
+      <a [routerLink]="['admin']">Admin</a>
+    } 
+  </nav>
+</header>

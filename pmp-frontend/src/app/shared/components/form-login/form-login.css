@@ -45,3 +45,9 @@ button:disabled {
   background-color: #90caf9;
   cursor: not-allowed;
 }
+
+.error-message {
+  color: red;
+  margin-top: 0.5rem;
+  text-align: center;
+}

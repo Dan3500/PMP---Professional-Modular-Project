@@ -9,7 +9,7 @@ import { FormLogin } from '../../../shared/components/form-login/form-login';
 })
 export class Login {
 
-  onLogin(credentials: { email: string; password: string }) {
-    console.log('Login attempt with', credentials);
+  onLogin(isLoggedIn: boolean) {
+    console.log('Login attempt with', isLoggedIn);
   }
 }

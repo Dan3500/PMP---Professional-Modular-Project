@@ -1,13 +1,16 @@
 <app-header></app-header>
 <div class="home-container">
-  <h1>Bienvenido a Home</h1>
-  <button class="open-login-btn" (click)="toggleLogin()">Iniciar Sesión</button>
-
-  <!-- Modal -->
-  <div class="modal-backdrop" *ngIf="showLogin" (click)="toggleLogin()"></div>
-  
-    <div class="modal" *ngIf="showLogin" [class.ng-animate]="showLogin">
-        <app-form-login (login)="handleLogin($event)"></app-form-login>
-    </div>
+  <h1>Welcome to Home</h1>
+  @if (!auth.isAuthenticated()) {
+      <button class="open-login-btn" (click)="toggleLogin()">Log in</button>
+      <!-- Modal -->
+      @if (showLogin) {
+        <div class="modal-backdrop" (click)="toggleLogin()"></div>
+        
+        <div class="modal" [class.ng-animate]="showLogin">
+            <app-form-login (login)="handleLogin($event)"></app-form-login>
+        </div>
+      }
+  }
 </div>
 <app-footer></app-footer>

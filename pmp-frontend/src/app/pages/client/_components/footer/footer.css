@@ -1,0 +1,22 @@
+.app-footer {
+  background: #004a99;
+  color: white;
+  padding: 1.2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.app-footer .social {
+  margin-top: 0.5rem;
+}
+
+.app-footer .social a {
+  margin: 0 0.75rem;
+  text-decoration: none;
+  color: #cfe3ff;
+  transition: opacity 0.2s ease;
+}
+
+.app-footer .social a:hover {
+  opacity: 0.7;
+}

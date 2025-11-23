@@ -75,16 +75,16 @@ class AuthController extends AbstractController
     #[Route('/login', name: 'app_login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
     {
-        // Convertir JSON a DTO para separar la validación/forma de los datos
+        // Deserialize LoginDTO
         $dto = $this->serializer->deserialize($request->getContent(), LoginDTO::class, 'json');
 
-        // Validación del DTO
+        // Validate DTO
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
             return $this->json(['errors' => (string) $errors], 400);
         }
 
-        // AuthService devuelve el token (o lanza una excepción/controla fallo internamente)
+        // AuthService sends back the JWT token
         $token = $this->authService->login($dto->email, $dto->password);
         return $this->json(['token' => $token], 200);
     }

@@ -25,6 +25,10 @@
       />
     </div>
 
-    <button type="submit" [disabled]="!loginForm.form.valid">Enter</button>
+    @if(errorMessage) {
+      <div class="error-message">{{ errorMessage }}</div>
+    }
+
+    <button type="submit" [disabled]="!loginForm.form.valid" (click)="onSubmit()">Enter</button>
   </form>
 </div>

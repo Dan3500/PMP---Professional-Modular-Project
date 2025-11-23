@@ -325,16 +325,3 @@ frontend/
 * Create a **reusable modular project**.
 * Demonstrate **Clean Code, clean architecture, and modularity**.
 * Strengthen the **professional brand danielsoltero.dev**.
-
--Página web para cliente empezando de colombia -> España
-
--Escalable a futuro para posibles futuros inmuebles
-Idea de crecimiento
--Información de contacto y de dirección externa
--WhatsApp
--Gestion de posible añadimiento de inmuebles
--CRUD -> Inmuebles
-
-
-<https://hogar-ideal-hub.lovable.app>
-<https://theboutiqueproperty.com/>
