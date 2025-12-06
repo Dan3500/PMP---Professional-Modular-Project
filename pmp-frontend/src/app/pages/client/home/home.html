@@ -11,6 +11,16 @@
             <app-form-login (login)="handleLogin($event)"></app-form-login>
         </div>
       }
+
+      <button class="open-register-btn" (click)="toggleRegister()">Register</button>
+      <!-- Modal -->
+      @if (showRegister) {
+        <div class="modal-backdrop" (click)="toggleRegister()"></div>
+        
+        <div class="modal" [class.ng-animate]="showRegister">
+            <app-form-register (register)="onRegister($event)"></app-form-register>
+        </div>
+      }
   }
 </div>
 <app-footer></app-footer>

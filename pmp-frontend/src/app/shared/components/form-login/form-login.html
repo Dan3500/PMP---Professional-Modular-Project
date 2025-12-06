@@ -1,13 +1,16 @@
 <div class="login-container">
   <h2>Log in</h2>
-  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm" autocomplete="on">
     <div class="form-group">
       <label for="email">Email</label>
       <input
         type="email"
         id="email"
         name="email"
+        (focus)="clearError()"
+         [class.error-border]="email_error"
         [(ngModel)]="email"
+        autocomplete="email"
         required
         placeholder="ejemplo@correo.com"
       />
@@ -17,18 +20,19 @@
       <label for="password">Password</label>
       <input
         type="password"
+        (focus)="clearError()"
+        [class.error-border]="password_error"
         id="password"
         name="password"
         [(ngModel)]="password"
+        autocomplete="current-password"
         required
         placeholder="********"
       />
     </div>
 
-    @if(errorMessage) {
-      <div class="error-message">{{ errorMessage }}</div>
-    }
-
-    <button type="submit" [disabled]="!loginForm.form.valid" (click)="onSubmit()">Enter</button>
+    <button type="submit" [disabled]="!loginForm.form.valid">Enter</button>
+  
+    <div class="error-message">{{ errorMessage }}</div>
   </form>
 </div>

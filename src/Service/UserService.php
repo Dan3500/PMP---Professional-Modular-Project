@@ -5,6 +5,8 @@ namespace App\Service;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Exception\UserRegisteredException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class UserService
 {
@@ -54,13 +56,23 @@ class UserService
 
     public function createUser(array $data): User
     {
+        // Optimistic check: see if a user with the email already exists
+        $existing = $this->getUserByEmail($data['email']);
+        if ($existing) {
+            throw new UserRegisteredException();
+        }
+
         $user = new User();
         $user->setEmail($data['email']);
         $user->setPassword($this->passwordHasher->hashPassword($user, $data['password']));
         $user->setName($data['name']);
 
-        $this->em->persist($user);
-        $this->em->flush();
+        try {
+            $this->em->getRepository(User::class)->save($user, true);
+        } catch (UniqueConstraintViolationException $e) {
+            // Race condition: another request inserted the same email between the check and the flush
+            throw new UserRegisteredException('User with this email is already registered.', 409);
+        }
 
         return $user;
     }
@@ -89,7 +101,13 @@ class UserService
             $user->setName($user->getName());
         }
 
-        $this->em->flush();
+        try {
+            $this->em->getRepository(User::class)->save($user, true);
+        } catch (UniqueConstraintViolationException $e) {
+            // Race condition: another request inserted the same email between the check and the flush
+            throw new UserRegisteredException('User with this email is already registered.', 409);
+        }
+
         return $user;
     }
 

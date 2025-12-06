@@ -3,8 +3,11 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../environments/env.dev';
 import { HttpClient } from '@angular/common/http';
 import { LoginFormModel } from '../models/form/LoginFormModel';
-import { AuthToken } from '../models/AuthToken';
 import { signal, computed } from '@angular/core';
+import { RegisterFormModel } from '../models/form/RegisterFormModel';
+import { ApiResponse } from '../models/API/ApiResponse';
+import { RegisterResponse } from '../models/API/RegisterResponse';
+import { User } from '../models/User';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +28,6 @@ export class AuthService {
 
   // Internal state with Signal
   private _isAuthenticated = signal<boolean>(false);
-
   // Public state for Auth as computed
   isAuthenticated = computed(() => this._isAuthenticated());
 
@@ -33,10 +35,14 @@ export class AuthService {
   private _roles = signal<string[]>([]);
   roles = computed(() => this._roles());
 
+  private _user = signal<User | null>(null);
+  user = computed(() => this._user());
+
+
+
   // ======================
   // AUTHENTICATION METHODS
   // ======================
-
   /**
    * Method to store the JWT  in local storage
    * @param token: JWT string
@@ -92,6 +98,23 @@ export class AuthService {
     return this._roles().includes(role);
   }
 
+
+  /**
+   *  Method to set user data and store in signal for global access
+   * @returns void
+   */
+  setUser(user:User): void {
+    this._user.set(user);
+  }
+
+  /**
+   *  Method to get user data from signal for global access
+   * @returns User | null
+   */
+  getUser(): User | null {
+    return this._user();
+  }
+
   /**
    * Method to log out the user by removing the JWT from local storage
    */
@@ -101,16 +124,25 @@ export class AuthService {
     this._roles.set([]);
   }
 
+
   // ======================
   // HTTP REQUEST METHODS
   // ======================
+  /**
+   * Method to log in the user by sending credentials to the backend
+   * @param form: LoginFormModel
+   * @returns ApiResponse Server response with the data of the login try
+   */
+  login(form: LoginFormModel) {
+    return this._http.post<ApiResponse>(`${this.apiUrl}/login`, form);
+  }
 
   /**
    * Method to log in the user by sending credentials to the backend
    * @param form: LoginFormModel
-   * @returns Observable<Object> Token from the backend
+   * @returns ApiResponse Server response with the data of the registration try
    */
-  login(form: LoginFormModel) {
-    return this._http.post<AuthToken>(`${this.apiUrl}/login`, form);
+  register(form:RegisterFormModel) {
+    return this._http.post<ApiResponse<RegisterResponse>>(`${this.apiUrl}/register`, form);
   }
 }

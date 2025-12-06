@@ -5,9 +5,10 @@
     <a href="#">Home</a>
     @if (!auth.isAuthenticated()) {
       <a [routerLink]="['login']">Login</a>
-      <a href="#">Register</a>
+      <a [routerLink]="['register']">Register</a>
     }
     @if (auth.isAuthenticated()) {
+      Hello {{ auth.getUser()?.name }}!
       <a href="#">Profile</a>
       <a (click)="logout()">Logout</a>
     }

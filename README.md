@@ -325,3 +325,6 @@ frontend/
 * Create a **reusable modular project**.
 * Demonstrate **Clean Code, clean architecture, and modularity**.
 * Strengthen the **professional brand danielsoltero.dev**.
+
+## Deep Wiki - More information here
+**https://deepwiki.com/Dan3500/PMP---Professional-Modular-Project**

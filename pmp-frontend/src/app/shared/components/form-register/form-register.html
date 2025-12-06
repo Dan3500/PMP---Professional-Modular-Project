@@ -1,1 +1,81 @@
-<p>form-register works!</p>
+<div class="register-container">
+  <h2>Register</h2>
+  <form (ngSubmit)="onSubmit()" #registerForm="ngForm" autocomplete="on">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        [(ngModel)]="name"
+        autocomplete="name"
+        (focus)="clearError()"
+        required
+        placeholder="User name"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [class.error-border]="email_error"
+        [(ngModel)]="email"
+        autocomplete="email"
+        (focus)="clearError()"
+        required
+        placeholder="ejemplo@correo.com"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Repeat email</label>
+      <input
+        type="email"
+        (focus)="clearError()"
+        [class.error-border]="email_repeated_error"
+        id="repeated-email"
+        name="repeated-email"
+        [(ngModel)]="repeated_email"
+        autocomplete="email"
+        required
+        placeholder="ejemplo@correo.com"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="repeated-password">Password</label>
+      <input
+        (focus)="clearError()"
+        type="password"
+        id="repeated-password"
+        name="repeated-password"
+         [class.error-border]="password_error"
+        [(ngModel)]="repeated_password"
+        required
+        placeholder="********"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Repeat Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        (focus)="clearError()"
+        [(ngModel)]="password"
+        autocomplete="current-password"
+        [class.error-border]="password_repeated_error"
+        required
+        placeholder="********"
+      />
+    </div>
+
+    <button type="submit" [disabled]="!registerForm.form.valid">Enter</button>
+
+    <div class="error-message">{{ errorMessage }}</div>
+  </form>
+</div>

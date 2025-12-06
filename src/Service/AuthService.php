@@ -4,18 +4,14 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class AuthService
 {
     public function __construct(
-        private EntityManagerInterface $em,
         private UserPasswordHasherInterface $passwordHasher,
         private JWTTokenManagerInterface $jwtManager,
-        private UserProviderInterface $userProvider,
         private UserRepository $userRepository,
         private UserService $userService  // Inject UserService to handle user creation
     ) {}
@@ -27,8 +23,8 @@ class AuthService
      */
     public function register(array $data): User
     {
-        $user = $this->userService->createUser($data);
-        return $user;
+        // Delegate user creation to UserService which is responsible for business validation
+        return $this->userService->createUser($data);
     }
 
     /**
@@ -50,6 +46,16 @@ class AuthService
         }
 
         return $this->jwtManager->create($user);
+    }
+
+    /**
+     * Get user by email
+     * @param string $email
+     * @return User|null
+     */
+    public function getUserByEmail(string $email): ?User
+    {
+        return $this->userRepository->findOneBy(['email' => $email]);
     }
 
     /**

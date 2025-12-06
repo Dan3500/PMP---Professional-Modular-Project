@@ -17,7 +17,7 @@ export class Header{
   }
 
   isAdmin() {
-    console.log(this.auth.getRoles());
+    return this.auth.hasRole('ADMIN');
   }
   
 }

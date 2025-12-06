@@ -6,6 +6,7 @@ use App\DTO\RegisterDTO;
 use App\DTO\LoginDTO;
 use App\DTO\UserDTO;
 use App\Service\AuthService;
+use App\Exception\UserRegisteredException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -44,21 +45,33 @@ class AuthController extends AbstractController
 
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
-            return $this->json(['errors' => (string) $errors], 400);
+            return $this->json(
+                ["success" => false, 
+                "data" => [], 
+                "message" => (string) $errors
+            ], 400, [], ['groups' => ['public']]);
         }
 
-        $user = $this->authService->register([
-            'email' => $dto->email,
-            'password' => $dto->password,
-            'name' => $dto->name
-        ]);
+        try {
+            $user = $this->authService->register([
+                'email' => $dto->email,
+                'password' => $dto->password,
+                'name' => $dto->name
+            ]);
+        } catch (UserRegisteredException $e) {
+            return $this->json(
+                ["success" => false, 
+                "data" => [],
+                "message" => (string) $e->getMessage()
+            ], 409, [], ['groups' => ['public']]);
+        }
 
-        return $this->json(
-            ['message' => 'User created', 'user' => UserDTO::fromEntity($user)], 
-            201, 
-            [],
-            ['groups' => ['user:read']]
-        );
+        $userDto = UserDTO::fromEntity($user);
+        return $this->json([
+            "success" => true, 
+            "data" => ["user"=>$userDto], 
+            "message" => "User registered successfully"
+        ], 201, [], ['groups' => ['public', 'user:read']]);
     }
 
 
@@ -81,12 +94,30 @@ class AuthController extends AbstractController
         // Validate DTO
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
-            return $this->json(['errors' => (string) $errors], 400);
+            return $this->json(
+                ['success' => false, 
+                "data"=>[], 
+                'message' => (string) $errors
+            ], 401, [], ['groups' => ['public']]);
         }
 
         // AuthService sends back the JWT token
-        $token = $this->authService->login($dto->email, $dto->password);
-        return $this->json(['token' => $token], 200);
+        try {
+            $token = $this->authService->login($dto->email, $dto->password);
+        } catch (\Exception $e) {
+            return $this->json(
+                ['success' => false, 
+                "data"=>[], 
+                'message' => $e->getMessage()], 401);
+        }
+
+        return $this->json([
+            'success' => true, 
+            "data"=>[
+                'token' => $token,
+                'user' => UserDTO::fromEntity($this->authService->getUserByEmail($dto->email))], 
+            'message' => 'Logged in successfully'
+        ], 200,[], ['groups' => ['public', 'user:read']]);
     }
 
     /**
@@ -97,7 +128,10 @@ class AuthController extends AbstractController
     public function logout(): JsonResponse
     {
         $this->authService->logout();
-        return $this->json(['message' => 'Logged out successfully'], 204);
+        return $this->json(
+            ['success' => true, 
+            "data" => [], 
+            'message' => 'Logged out successfully'], 204);
     }
 
 }
