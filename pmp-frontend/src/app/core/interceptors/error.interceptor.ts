@@ -10,7 +10,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((httpError: HttpErrorResponse) => {
-      // Verifica si el campo `error` tiene la estructura de ApiResponse
+      // Check if the `error` field has the ApiResponse structure
       const error = httpError.error as ApiResponse<any>;
 
       if (req.url.endsWith('/register')) {
@@ -39,7 +39,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                         timerProgressBar: true,
                     });
             break;
-          // Otros casos específicos si es necesario
+          // Other specific cases if necessary
         }
       }else if (req.url.endsWith('/login')) {
         switch (httpError.status) {

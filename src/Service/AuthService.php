@@ -35,7 +35,7 @@ class AuthService
      */
     public function login(string $email, string $password): ?string
     {
-        $user = $this->userRepository->findOneBy(['email' => $email]);
+        $user = $this->userRepository->findOneBy(['email' => $email, "is_active" => true]);
 
         if (!$user) {
             throw new \Exception('User not found');

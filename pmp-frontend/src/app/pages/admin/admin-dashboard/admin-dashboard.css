@@ -1,0 +1,25 @@
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  max-width:1500px;
+  min-height: 85dvh;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.main-content h2 {
+  color: #1a1a2e;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .main-content h2 {
+    font-size: 1.5rem;
+  }
+}

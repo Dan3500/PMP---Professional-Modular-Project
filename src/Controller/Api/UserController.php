@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\User;
+use App\DTO\UserDTO;
 use App\Repository\UserRepository;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,15 +14,15 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api')]
 /**
- * Controller para operaciones relacionadas con usuarios.
+ * Controller for operations related to users.
  *
- * Rutas agrupadas bajo el prefijo `/api` (attribute route en la clase).
- * Contiene endpoints tanto para usuarios autenticados como para operaciones administrativas.
+ * Routes grouped under the `/api` prefix (attribute route on the class).
+ * Contains endpoints for both authenticated users and administrative operations.
  *
- * Buenas prácticas en los métodos:
- * - Usar DTOs cuando la operación reciba/retorne estructuras complejas.
- * - Validar la entrada con el Validator de Symfony.
- * - Devolver códigos HTTP correctos (200, 201, 204, 400, 404, 401, 403, ...).
+ * Best practices for methods:
+ * - Use DTOs when the operation receives/returns complex structures.
+ * - Validate input with Symfony's Validator.
+ * - Return correct HTTP status codes (200, 201, 204, 400, 404, 401, 403, ...).
  */
 class UserController extends AbstractController
 {
@@ -29,15 +30,20 @@ class UserController extends AbstractController
     {
     }
 
-    // Endpoints para operaciones con el perfil del usuario autenticado
+    // Endpoints for operations with the authenticated user's profile
 
     #[Route('/users/me', name: 'api_user_me', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     public function getProfile(): JsonResponse
     {
-        // getUser() devuelve la entidad del usuario autenticado (o null si no hay sesión)
+        // getUser() returns the authenticated user entity (or null if no session)
         $user = $this->getUser();
-        return $this->json($user, 200, [], ['groups' => ['user:read']]);
+        $userDto = UserDTO::fromEntity($user);
+        return $this->json([
+            'success' => true,
+            'data' => $userDto,
+            'message' => 'Profile retrieved successfully'
+        ], 200, [], ['groups' => ['user:read']]);
     }
 
     #[Route('/users/me', name: 'api_user_update_me', methods: ['PUT'])]
@@ -46,64 +52,97 @@ class UserController extends AbstractController
     {
         $user = $this->getUser();
 
-        // Se espera JSON en el cuerpo con los campos a actualizar
+        // JSON is expected in the body with the fields to update
         $data = json_decode($request->getContent(), true);
 
-        // Delegamos la lógica de actualización al servicio (encapsula validaciones/transformaciones)
+        // Delegate update logic to the service (encapsulates validations/transformations)
         $updated = $this->userService->updateUser($user, $data);
-        return $this->json($updated, 200, [], ['groups' => ['user:read']]);
+        $userDto = UserDTO::fromEntity($updated);
+        return $this->json([
+            'success' => true,
+            'data' => $userDto,
+            'message' => 'Profile updated successfully'
+        ], 200, [], ['groups' => ['user:read']]);
     }
 
-    // Endpoints para administración (requieren ROLE_ADMIN)
+    // Endpoints for administration (requires ROLE_ADMIN)
 
-    #[Route('/admin/users', name: 'api_admin_users_list', methods: ['GET'])]
+    #[Route('/v1/admin/users', name: 'api_admin_users_list', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     public function listUsers(UserRepository $repo): JsonResponse
     {
-        // Listado de todos los usuarios (paginación podría añadirse aquí)
+        // List of all users (pagination could be added here)
         $users = $repo->findAll();
-        return $this->json($users, 200, [], ['groups' => ['admin:read']]);
+        $userDtos = array_map(fn($user) => UserDTO::fromEntity($user), $users);
+        return $this->json([
+            'success' => true,
+            'data' => $userDtos,
+            'message' => 'Users retrieved successfully'
+        ], 200, [], ['groups' => ['admin:read']]);
     }
 
-    #[Route('/admin/users/{id}', name: 'api_admin_users_get', methods: ['GET'])]
+    #[Route('/v1/admin/users/{id}', name: 'api_admin_users_get', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     public function getUserById(int $id, UserRepository $repo): JsonResponse
     {
-        // Buscar el usuario por id; devolver 404 si no existe
+        // Search for user by id; return 404 if not found
         $user = $repo->find($id);
         if (!$user) {
-            return $this->json(['error' => 'User not found'], 404);
+            return $this->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'User not found'
+            ], 404);
         }
 
-        return $this->json($user, 200, [], ['groups' => ['admin:read']]);
+        $userDto = UserDTO::fromEntity($user);
+        return $this->json([
+            'success' => true,
+            'data' => $userDto,
+            'message' => 'User retrieved successfully'
+        ], 200, [], ['groups' => ['admin:read']]);
     }
 
-    #[Route('/admin/user-create', name: 'api_admin_users_create', methods: ['POST'])]
+    #[Route('/v1/admin/user', name: 'api_admin_users_create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function createUser(Request $request): JsonResponse
     {
-        // Crear un usuario a partir del JSON recibido
+        // Create a user from the received JSON
         $data = json_decode($request->getContent(), true);
         $newUser = $this->userService->createUser($data);
-        return $this->json($newUser, 201, [], ['groups' => ['admin:read']]);
+        $userDto = UserDTO::fromEntity($newUser);
+        return $this->json([
+            'success' => true,
+            'data' => $userDto,
+            'message' => 'User created successfully'
+        ], 201, [], ['groups' => ['admin:read']]);
     }
 
-    #[Route('/admin/user-update', name: 'api_admin_users_update', methods: ['PUT'])]
+    #[Route('/v1/admin/user', name: 'api_admin_users_update', methods: ['PUT'])]
     #[IsGranted('ROLE_ADMIN')]
     public function updateUser(Request $request, User $user): JsonResponse
     {
-        // Actualiza la entidad User pasada por param converter con los datos del body
+        // Updates the User entity passed by param converter with the body data
         $data = json_decode($request->getContent(), true);
         $updated = $this->userService->updateUser($user, $data);
-        return $this->json($updated, 200, [], ['groups' => ['admin:read']]);
+        $userDto = UserDTO::fromEntity($updated);
+        return $this->json([
+            'success' => true,
+            'data' => $userDto,
+            'message' => 'User updated successfully'
+        ], 200, [], ['groups' => ['admin:read']]);
     }
 
-    #[Route('/admin/user-delete', name: 'api_admin_users_delete', methods: ['DELETE'])]
+    #[Route('/v1/admin/user', name: 'api_admin_users_delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_ADMIN')]
     public function deleteUser(User $user): JsonResponse
     {
-        // Eliminar usuario (servicio puede manejar soft-delete o validaciones adicionales)
+        // Delete user (service may handle soft-delete or additional validations)
         $this->userService->deleteUser($user);
-        return $this->json(null, 204);
+        return $this->json([
+            'success' => true,
+            'data' => null,
+            'message' => 'User deleted successfully'
+        ], 204);
     }
 }

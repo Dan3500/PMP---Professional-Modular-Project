@@ -20,6 +20,8 @@ export class AuthService {
     // Initialize signals with the current token
     this._isAuthenticated.set(this.hasValidToken());
     this._roles.set(this.getRolesFromToken());
+    // Initialize user from localStorage if exists
+    this._loadUserFromStorage();
   }
 
   // ======================
@@ -65,7 +67,7 @@ export class AuthService {
    * Method to check if the JWT is valid
    * @returns boolean: true if the token is valid, false otherwise
    */
-  private hasValidToken(): boolean {
+  hasValidToken(): boolean {
     const token = this.getToken();
     return !!token && !this.jwtHelper.isTokenExpired(token);
   }
@@ -105,6 +107,8 @@ export class AuthService {
    */
   setUser(user:User): void {
     this._user.set(user);
+    // Persist user to localStorage
+    localStorage.setItem('user_data', JSON.stringify(user));
   }
 
   /**
@@ -116,12 +120,31 @@ export class AuthService {
   }
 
   /**
+   * Method to load user from localStorage if exists
+   * @returns void
+   */
+  private _loadUserFromStorage(): void {
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        this._user.set(user);
+      } catch (error) {
+        console.error('Error loading user from storage:', error);
+        localStorage.removeItem('user_data');
+      }
+    }
+  }
+
+  /**
    * Method to log out the user by removing the JWT from local storage
    */
   logout(): void {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('user_data');
     this._isAuthenticated.set(false);
     this._roles.set([]);
+    this._user.set(null);
   }
 
 

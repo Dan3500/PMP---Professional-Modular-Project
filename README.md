@@ -215,7 +215,7 @@ frontend/
 
 # PMP – Professional Modular Project Roadmap
 
-## Week 1-2: Design & Project Setup 🎯
+## Week 1-2: Design & Project Setup 🎯 ✅ COMPLETED
 - Analyze project requirements to define an optimal stack, technologies, and infrastructure for a simple, modular, and scalable personal project.  
 - Choose the technical stack and development tools.  
 - Configure the database and set up the development environment (VS Code, dependencies, and local services).  
@@ -223,28 +223,28 @@ frontend/
 
 ---
 
-## Week 3-4: Authentication 🔑
+## Week 3-4: Authentication 🔑 ✅ COMPLETED
 
 ### Backend
-- Set up the authentication module structure in Symfony.  
-- Implement `/register` endpoint with input validation.  
-- Implement `/login` endpoint with JWT authentication.  
-- Implement `/logout` endpoint.  
+- ✅ Set up the authentication module structure in Symfony.  
+- ✅ Implement `/register` endpoint with input validation.  
+- ✅ Implement `/login` endpoint with JWT authentication.  
+- ✅ Implement `/logout` endpoint.  
 
 ### Frontend
-- Create login form component.  
-- Create register form component.  
-- Implement form validation and error handling.  
-- Guard private routes to ensure secure access.  
+- ✅ Create login form component.  
+- ✅ Create register form component.  
+- ✅ Implement form validation and error handling.  
+- ✅ Guard private routes to ensure secure access.  
 
 ---
 
-## Week 5-6: User Management 👥
+## Week 5-6: User Management 👥 
 
 ### Backend
 - Create `User` entity with fields: `id`, `name`, `email`, `password`, `roles`, `created_at`, `updated_at`.  
 - Implement CRUD endpoints for users (create, list, update, delete).  
-- Implement role handling: `ROLE_USER`, `ROLE_ADMIN`, `ROLE_SUPER_ADMIN`.  
+- Implement role handling: `ROLE_USER`, `ROLE_ADMIN`, `ROLE_SUPER_ADMIN`...
 - Write unit tests for user CRUD and role management.
 
 ### Frontend
@@ -259,8 +259,31 @@ frontend/
 - Refactor frontend components and services.
 
 ---
+## ⏸️ PROJECT PAUSE - CHRISTMAS HOLIDAYS
+---
 
-## Week 7-8: Posts / Scalable Content 📝
+## Week 10-12: Admin Dashboard - Users Management 📊 (Current)
+
+### Backend
+- Implement admin users endpoints with advanced filtering.  
+- Create user statistics and analytics service.  
+- Implement role-based access control for admin endpoints.  
+- Write unit tests for admin user services.
+
+### Frontend
+- Build admin users dashboard with table and filtering.  
+- Create user edit/delete forms with confirmations.  
+- Implement bulk actions for user management.  
+- Display user statistics and analytics.  
+- Write unit tests for admin user components.
+
+### Clean Code / Refactoring
+- Review code for SOLID principles and modular architecture.  
+- Refactor shared services and helper utilities.
+
+---
+
+## Week 13-14: Posts / Scalable Content 📝
 
 ### Backend
 - Create `Post` entity with fields: `id`, `user_id`, `title`, `content`, `tags`, `created_at`, `updated_at`.  
@@ -275,25 +298,7 @@ frontend/
 
 ---
 
-## Week 9-10: Dashboard 📊
-
-### Backend
-- Implement `/dashboard` endpoint with dummy statistics.  
-- Include counts for total users and total posts.  
-- Write unit tests for dashboard services.
-
-### Frontend
-- Build dashboard component with statistic cards.  
-- Display total users and posts dynamically.  
-- Write unit tests for the dashboard component.
-
-### Clean Code / Refactoring
-- Review code for SOLID principles and modular architecture.  
-- Refactor shared services and helper utilities.
-
----
-
-## Week 11-12: Integration & Deployment 🚀
+## Week 15-16: Admin Dashboard - Posts Management 📝
 
 ### Integration
 - Connect frontend and backend via REST API.  

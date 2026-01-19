@@ -1,0 +1,72 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>{{ dialogTitle }}</h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Name field -->
+      <mat-form-field class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="Ex: John Smith" />
+        @if (form.get('name')?.hasError('required')) {
+          <mat-error>Name is required</mat-error>
+        }
+        @if (form.get('name')?.hasError('minlength')) {
+          <mat-error>Name must have at least 3 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Email field -->
+      <mat-form-field class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" placeholder="Ex: john@email.com" />
+        @if (form.get('email')?.hasError('required')) {
+          <mat-error>Email is required</mat-error>
+        }
+        @if (form.get('email')?.hasError('email')) {
+          <mat-error>Please enter a valid email</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Roles field -->
+      <mat-form-field class="full-width">
+        <mat-label>Roles</mat-label>
+        <mat-select formControlName="roles" multiple>
+          @for (role of availableRoles; track role) {
+            <mat-option [value]="role">{{ role }}</mat-option>
+          }
+        </mat-select>
+        @if (form.get('roles')?.hasError('required')) {
+          <mat-error>You must select at least one role</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Status field -->
+      <div class="toggle-container">
+        <label for="isActive">Status:</label>
+        <mat-slide-toggle
+          id="isActive"
+          formControlName="isActive"
+          color="accent"
+        >
+          @if (form.get('isActive')?.value) {
+            <span>Active</span>
+          } @else {
+            <span>Inactive</span>
+          }
+        </mat-slide-toggle>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancelar</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="!isFormValid"
+    >
+      {{ submitButtonText }}
+    </button>
+  </mat-dialog-actions>
+</div>

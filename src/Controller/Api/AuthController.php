@@ -35,8 +35,8 @@ class AuthController extends AbstractController
      * - Validate the DTO; if there are errors, respond with 400 and details.
      * - Delegate creation to AuthService and return 201 with the id.
      * 
-     * @param Request $request Request HTTP con JSON en el cuerpo
-     * @return JsonResponse Respuesta JSON con estado y datos mínimos
+     * @param Request $request HTTP Request with JSON in the body
+     * @return JsonResponse JSON response with status and minimal data
      */
     #[Route('/register', name: 'app_register', methods: ['POST'])]
     public function register(Request $request): JsonResponse

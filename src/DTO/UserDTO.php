@@ -37,6 +37,7 @@ class UserDTO
         $dto->roles = $user->getRole();
         $dto->createdAt = $user->getCreatedAt()->format('Y-m-d H:i:s');
         $dto->updatedAt = $user->getUpdatedAt()->format('Y-m-d H:i:s');
+        $dto->isActive = $user->isActive();
         return $dto;
     }
 }
