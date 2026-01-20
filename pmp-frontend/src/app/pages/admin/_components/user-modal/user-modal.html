@@ -27,6 +27,17 @@
         }
       </mat-form-field>
 
+      <mat-form-field class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" type="password" placeholder="Enter a password" />
+        @if (form.get('password')?.hasError('required')) {
+          <mat-error>Password is required</mat-error>
+        }
+        @if (form.get('password')?.hasError('minlength')) {
+          <mat-error>Password must have at least 6 characters</mat-error>
+        }
+      </mat-form-field>
+
       <!-- Roles field -->
       <mat-form-field class="full-width">
         <mat-label>Roles</mat-label>

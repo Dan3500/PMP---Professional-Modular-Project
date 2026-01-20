@@ -67,12 +67,10 @@ export class UserService {
   }
 
   updateUser(id: string, data: UpdateUserDTO): Observable<UserDTO> {
-    // Note: the backend endpoint is PUT /api/v1/admin/user but requires the User by param converter
-    // We use the id in the data for this
     return this.http
       .put<ApiResponse<UserDTO>>(
-        `${this.apiUrl}${this.baseEndpoint}`,
-        { id, ...data },
+        `${this.apiUrl}${this.baseEndpoint}/${id}`,
+        data,
         { headers: { 'Accept': 'application/json' } }
       )
       .pipe(map((response) => response.data!));
@@ -85,5 +83,14 @@ export class UserService {
         { headers: { 'Accept': 'application/json' } }
       )
       .pipe(map(() => undefined));
+  }
+
+  activateUser(id: string): Observable<UserDTO> {
+    return this.http
+      .put<ApiResponse<UserDTO>>(
+        `${this.apiUrl}/api/v1/admin/user/activate/${id}`,
+        { headers: { 'Accept': 'application/json' } }
+      )
+      .pipe(map((response) => response.data!));
   }
 }

@@ -100,7 +100,40 @@ class UserService
         }else{
             $user->setName($user->getName());
         }
+        if (isset($data['roles'])) {
+            $user->setRole($data['roles']);
+        }else{
+            $user->setRole($user->getRoles());
+        }
+        if (isset($data['is_active'])) {
+            $user->setIsActive($data['is_active']);
+        }else{
+            $user->setIsActive($user->isActive());
+        }
 
+        $user->setUpdatedAt(new \DateTimeImmutable());
+
+        try {
+            $this->em->getRepository(User::class)->save($user, true);
+        } catch (UniqueConstraintViolationException $e) {
+            // Race condition: another request inserted the same email between the check and the flush
+            throw new UserRegisteredException('User with this email is already registered.', 409);
+        }
+
+        return $user;
+    }
+
+
+    /**
+     * Active/Deactivate user
+     * @param User $user
+     * @param array $data
+     * @return User
+     */
+    public function activeUser(User $user, array $data): User
+    {
+        $user->setIsActive(!$user->isActive());
+        
         try {
             $this->em->getRepository(User::class)->save($user, true);
         } catch (UniqueConstraintViolationException $e) {

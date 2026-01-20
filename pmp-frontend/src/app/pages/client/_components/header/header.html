@@ -12,7 +12,7 @@
       <a href="#">Profile</a>
       <a (click)="logout()">Logout</a>
     }
-    @if (auth.getRoles().includes('ROLE_ADMIN')) {
+    @if (auth.isAuthenticated() && auth.getRoles().includes('ROLE_ADMIN')) {
       <a [routerLink]="['admin']">Admin</a>
     } 
   </nav>

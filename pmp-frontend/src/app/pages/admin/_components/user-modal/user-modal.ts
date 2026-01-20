@@ -7,6 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
+import { UserService } from '../../../../core/services/user/user.service';
+import { firstValueFrom } from 'rxjs';
 
 interface UserDTO {
   id?: string;
@@ -41,7 +43,8 @@ export class UserModalComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<UserModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserDTO | null,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -54,6 +57,7 @@ export class UserModalComponent implements OnInit {
       name: [this.data?.name || '', [Validators.required, Validators.minLength(3)]],
       email: [this.data?.email || '', [Validators.required, Validators.email]],
       roles: [this.data?.roles || ['ROLE_USER'], Validators.required],
+      password: [this.data ? '' : '', this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]],
       isActive: [this.data?.isActive || false],
     });
   }
@@ -62,19 +66,38 @@ export class UserModalComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.form.valid) {
       const formData = this.form.value;
       
-      if (this.isEditMode) {
-        // Edit mode: keep original ID
-        this.dialogRef.close({
-          ...this.data,
-          ...formData,
-        });
-      } else {
-        // Create mode: generate new user
-        this.dialogRef.close(formData);
+      try {
+        if (this.isEditMode) {
+          // Edit mode: call updateUser service
+          const updatedUser = await firstValueFrom(
+            this.userService.updateUser(this.data!.id!, {
+              name: formData.name,
+              email: formData.email,
+              password: formData.password || undefined,
+              roles: formData.roles,
+              is_active: formData.isActive,
+            })
+          );
+          this.dialogRef.close(updatedUser);
+        } else {
+          // Create mode: call createUser service
+          const newUser = await firstValueFrom(
+            this.userService.createUser({
+              name: formData.name,
+              email: formData.email,
+              password: formData.password,
+              role: formData.roles,
+            })
+          );
+          this.dialogRef.close(newUser);
+        }
+      } catch (error) {
+        console.error('Error saving user:', error);
+        // Optionally, handle error display to the user here
       }
     }
   }

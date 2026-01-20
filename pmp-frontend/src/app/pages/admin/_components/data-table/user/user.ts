@@ -120,5 +120,25 @@ export class User implements OnInit, AfterViewInit {
   }
 
   toggleUserStatus(user: UserDTO): void {
+    try {
+      this.userService.activateUser(user.id).subscribe({
+        next: (updatedUser) => {
+          // Update the user in the table
+          const index = this.dataSource.data.findIndex((u) => u.id === user.id);
+          if (index !== -1) {
+            const updatedData = [...this.dataSource.data];
+            updatedData[index] = updatedUser;
+            this.dataSource.data = updatedData;
+          }
+        },
+        error: (error) => {
+          console.error('Error updating user status:', error);
+          alert('Failed to update user status. Please try again.');
+        },
+      });
+    } catch (error: any) {
+      console.error('Error toggling user status:', error);
+      alert('Failed to toggle user status. Please try again.');
+    }
   }
 }

@@ -4,9 +4,11 @@ import { Router } from '@angular/router';
 import { inject } from '@angular/core';
 import  Swal  from 'sweetalert2';
 import { ApiResponse } from '../models/API/ApiResponse';
+import { AuthService } from '../services/auth.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
+  const authService = inject(AuthService);
 
   return next(req).pipe(
     catchError((httpError: HttpErrorResponse) => {
@@ -56,6 +58,27 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                 });
             break;
         }
+    }else{
+      // Handle 401 Unauthorized (expired token)
+      switch (httpError.status) {
+            case 401:// Clear authentication signals via AuthService
+              authService.logout();
+            
+              // Redirect to login
+              router.navigate(['/login']);
+              
+              Swal.fire({
+                icon: 'warning',
+                title: 'Session Expired',
+                toast: true,
+                position: 'top-end',
+                text: 'Your session has expired. Please log in again.',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+              });
+          break;
+      }
     }
     
       return throwError(() => error);

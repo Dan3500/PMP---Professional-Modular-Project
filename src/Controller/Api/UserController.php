@@ -118,11 +118,21 @@ class UserController extends AbstractController
         ], 201, [], ['groups' => ['admin:read']]);
     }
 
-    #[Route('/v1/admin/user', name: 'api_admin_users_update', methods: ['PUT'])]
+    #[Route('/v1/admin/user/{id}', name: 'api_admin_users_update', methods: ['PUT'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function updateUser(Request $request, User $user): JsonResponse
+    public function updateUser(Request $request, int $id, UserRepository $repo): JsonResponse
     {
-        // Updates the User entity passed by param converter with the body data
+        // Find user by id; return 404 if not found
+        $user = $repo->find($id);
+        if (!$user) {
+            return $this->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Updates the User entity with the body data
         $data = json_decode($request->getContent(), true);
         $updated = $this->userService->updateUser($user, $data);
         $userDto = UserDTO::fromEntity($updated);
@@ -133,10 +143,46 @@ class UserController extends AbstractController
         ], 200, [], ['groups' => ['admin:read']]);
     }
 
-    #[Route('/v1/admin/user', name: 'api_admin_users_delete', methods: ['DELETE'])]
+
+    #[Route('/v1/admin/user/activate/{id}', name: 'api_admin_users_activate', methods: ['PUT'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function deleteUser(User $user): JsonResponse
+    public function activateUser(Request $request, int $id, UserRepository $repo): JsonResponse
     {
+        // Find user by id; return 404 if not found
+        $user = $repo->find($id);
+        if (!$user) {
+            return $this->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Updates the User entity with active status from the body data
+        $data = json_decode($request->getContent(), true);
+        $updated = $this->userService->activeUser($user, $data);
+        $userDto = UserDTO::fromEntity($updated);
+        return $this->json([
+            'success' => true,
+            'data' => $userDto,
+            'message' => 'User updated successfully'
+        ], 200, [], ['groups' => ['admin:read']]);
+    }
+
+    #[Route('/v1/admin/user/{id}', name: 'api_admin_users_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function deleteUser(int $id, UserRepository $repo): JsonResponse
+    {
+        // Search for user by id; return 404 if not found
+        $user = $repo->find($id);
+        if (!$user) {
+            return $this->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'User not found'
+            ], 404);
+        }
+
         // Delete user (service may handle soft-delete or additional validations)
         $this->userService->deleteUser($user);
         return $this->json([

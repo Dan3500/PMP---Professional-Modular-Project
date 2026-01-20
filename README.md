@@ -239,7 +239,7 @@ frontend/
 
 ---
 
-## Week 5-6: User Management 👥 
+## Week 5-6: User Management 👥 ✅ COMPLETED
 
 ### Backend
 - Create `User` entity with fields: `id`, `name`, `email`, `password`, `roles`, `created_at`, `updated_at`.  
@@ -262,7 +262,7 @@ frontend/
 ## ⏸️ PROJECT PAUSE - CHRISTMAS HOLIDAYS
 ---
 
-## Week 10-12: Admin Dashboard - Users Management 📊 (Current)
+## Week 10-12: Admin Dashboard - Users Management 📊 ✅ COMPLETED
 
 ### Backend
 - Implement admin users endpoints with advanced filtering.  
@@ -283,7 +283,7 @@ frontend/
 
 ---
 
-## Week 13-14: Posts / Scalable Content 📝
+## Week 13-14: Posts / Scalable Content 📝 (Current)
 
 ### Backend
 - Create `Post` entity with fields: `id`, `user_id`, `title`, `content`, `tags`, `created_at`, `updated_at`.  
