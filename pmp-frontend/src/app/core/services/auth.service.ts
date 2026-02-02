@@ -157,7 +157,7 @@ export class AuthService {
    * @returns ApiResponse Server response with the data of the login try
    */
   login(form: LoginFormModel) {
-    return this._http.post<ApiResponse>(`${this.apiUrl}/login`, form);
+    return this._http.post<ApiResponse>(`${this.apiUrl}/v1/login`, form);
   }
 
   /**
@@ -166,6 +166,6 @@ export class AuthService {
    * @returns ApiResponse Server response with the data of the registration try
    */
   register(form:RegisterFormModel) {
-    return this._http.post<ApiResponse<RegisterResponse>>(`${this.apiUrl}/register`, form);
+    return this._http.post<ApiResponse<RegisterResponse>>(`${this.apiUrl}/v1/register`, form);
   }
 }

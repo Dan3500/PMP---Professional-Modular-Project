@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -39,12 +41,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $is_active = false;
 
+    /**
+     * @var Collection<int, Post>
+     */
+    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'creator', orphanRemoval: true)]
+    private Collection $posts;
+
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Madrid'));
         $this->updated_at = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Madrid'));
         $this->role = ['ROLE_USER'];
         $this->is_active = false;
+        $this->posts = new ArrayCollection();
     }
 
     #[ORM\PreUpdate]
@@ -155,6 +164,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsActive(bool $is_active): static
     {
         $this->is_active = $is_active;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Post>
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(Post $post): static
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts->add($post);
+            $post->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(Post $post): static
+    {
+        if ($this->posts->removeElement($post)) {
+            // set the owning side to null (unless already changed)
+            if ($post->getCreator() === $this) {
+                $post->setCreator(null);
+            }
+        }
 
         return $this;
     }

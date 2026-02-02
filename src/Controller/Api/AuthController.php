@@ -38,7 +38,7 @@ class AuthController extends AbstractController
      * @param Request $request HTTP Request with JSON in the body
      * @return JsonResponse JSON response with status and minimal data
      */
-    #[Route('/register', name: 'app_register', methods: ['POST'])]
+    #[Route('/v1/register', name: 'app_register', methods: ['POST'])]
     public function register(Request $request): JsonResponse
     {
         $dto = $this->serializer->deserialize($request->getContent(), RegisterDTO::class, 'json');
@@ -85,7 +85,7 @@ class AuthController extends AbstractController
      * @param Request $request JSON -> {"email":"...","password":"..."}
      * @return JsonResponse {"token":"..."} or 400 in case of validation errors
      */
-    #[Route('/login', name: 'app_login', methods: ['POST'])]
+    #[Route('/v1/login', name: 'app_login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
     {
         // Deserialize LoginDTO

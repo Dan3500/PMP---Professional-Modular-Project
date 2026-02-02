@@ -1,1 +1,160 @@
-<p>post works!</p>
+<div class="table-container">
+  <div class="header-with-button">
+    <h2>Post Management</h2>
+    <div class="button-group">
+      <button
+        mat-icon-button
+        matTooltip="Refresh Posts"
+        (click)="loadPosts()"
+        [disabled]="isLoading"
+        class="refresh-button"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button
+        mat-raised-button
+        class="create-button"
+        (click)="openCreateDialog()"
+        [disabled]="isLoading"
+      >
+        + Create Post
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  @if (isLoading) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+      <p>Loading posts...</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (errorMessage) {
+    <div class="error-message">
+      <p>{{ errorMessage }}</p>
+      <button mat-button (click)="loadPosts()">Retry</button>
+    </div>
+  }
+
+  <!-- Material Table -->
+  @if (!isLoading && (dataSource.data.length > 0 || !errorMessage)) {
+    <div class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource" class="posts-table">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <!-- Message Column -->
+        <ng-container matColumnDef="message">
+          <th mat-header-cell *matHeaderCellDef>Message</th>
+          <td mat-cell *matCellDef="let element" class="message-cell">
+            @if (element.message && element.message.length > 50) {
+              {{ element.message | slice: 0: 50 }}...
+            } @else {
+              {{ element.message || 'N/A' }}
+            }
+          </td>
+        </ng-container>
+
+        <!-- Creator Column -->
+        <ng-container matColumnDef="creator">
+          <th mat-header-cell *matHeaderCellDef>Creator</th>
+          <td mat-cell *matCellDef="let element">{{ element.creator?.name || 'N/A' }}</td>
+        </ng-container>
+
+        <!-- Read Column -->
+        <ng-container matColumnDef="read">
+          <th mat-header-cell *matHeaderCellDef>Read</th>
+          <td mat-cell *matCellDef="let element">
+            @if (element.read) {
+              <span class="read-badge read">✓</span>
+            } @else {
+              <span class="read-badge unread">✗</span>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Created At Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Created At</th>
+          <td mat-cell *matCellDef="let element">{{ element.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+        </ng-container>
+
+        <!-- Updated At Column -->
+        <ng-container matColumnDef="updatedAt">
+          <th mat-header-cell *matHeaderCellDef>Updated At</th>
+          <td mat-cell *matCellDef="let element">{{ element.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+        </ng-container>
+
+        <!-- Is Active Column -->
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let element">
+            @if (element.active) {
+              <button mat-icon-button matTooltip="Active - Click to deactivate" class="active_icon" (click)="togglePostStatus(element)">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            } @else {
+              <button mat-icon-button matTooltip="Inactive - Click to activate" class="inactive_icon" (click)="togglePostStatus(element)">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              matTooltip="Edit"
+              class="edit-button"
+              (click)="openEditDialog(element)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Delete"
+              color="warn"
+              (click)="deletePost(element.id)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator
+        #paginator
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        [pageSize]="10"
+        showFirstLastButtons
+      ></mat-paginator>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading && dataSource.data.length === 0 && !errorMessage) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">description</mat-icon>
+      <p>No posts found</p>
+      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        + Create your first post
+      </button>
+    </div>
+  }
+</div>

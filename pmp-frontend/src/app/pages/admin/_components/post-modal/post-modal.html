@@ -1,0 +1,94 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>{{ dialogTitle }}</h2>
+
+  <mat-dialog-content>
+    @if (isFormReady) {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Name field -->
+      <mat-form-field class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="Ex: My Post Title" />
+        @if (form.get('name')?.hasError('required')) {
+          <mat-error>Name is required</mat-error>
+        }
+        @if (form.get('name')?.hasError('minlength')) {
+          <mat-error>Name must have at least 3 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Message field -->
+      <mat-form-field class="full-width">
+        <mat-label>Message</mat-label>
+        <textarea matInput formControlName="message" placeholder="Write your message..." rows="6"></textarea>
+        @if (form.get('message')?.hasError('required')) {
+          <mat-error>Message is required</mat-error>
+        }
+        @if (form.get('message')?.hasError('minlength')) {
+          <mat-error>Message must have at least 10 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Creator field -->
+      <mat-form-field class="full-width">
+        <mat-label>Creator</mat-label>
+        <mat-select formControlName="creatorId" [disabled]="isLoadingUsers">
+          @if (isLoadingUsers) {
+            <mat-option disabled>Loading users...</mat-option>
+          } @else {
+            @for (user of users; track user.id) {
+              <mat-option [value]="user.id">{{ user.name }} ({{ user.email }})</mat-option>
+            }
+          }
+        </mat-select>
+        @if (form.get('creatorId')?.hasError('required')) {
+          <mat-error>Creator is required</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Read field -->
+      <div class="toggle-container">
+        <label for="read">Mark as Read:</label>
+        <mat-slide-toggle
+          id="read"
+          formControlName="read"
+          color="accent"
+        >
+          @if (form.get('read')?.value) {
+            <span>Read</span>
+          } @else {
+            <span>Unread</span>
+          }
+        </mat-slide-toggle>
+      </div>
+
+      <!-- Active field -->
+      <div class="toggle-container">
+        <label for="active">Status:</label>
+        <mat-slide-toggle
+          id="active"
+          formControlName="active"
+          color="accent"
+        >
+          @if (form.get('active')?.value) {
+            <span>Active</span>
+          } @else {
+            <span>Inactive</span>
+          }
+        </mat-slide-toggle>
+      </div>
+    </form>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancelar</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="!isFormValid"
+    >
+      {{ submitButtonText }}
+    </button>
+  </mat-dialog-actions>
+</div>
