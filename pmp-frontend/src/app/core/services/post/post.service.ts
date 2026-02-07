@@ -3,19 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/env.dev';
 import { ApiResponse } from '../../models/API/ApiResponse';
-import { User } from '../../../pages/admin/_components/data-table/user/user';
-import { Post } from '../../../pages/admin/_components/data-table/post/post';
-
-export interface PostDTO {
-  id: string;
-  name: string;
-  message: string;
-  read:boolean;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
-  creator: User;
-}
+import { Post } from '../../models/Post';
 
 export interface PostRequestDTO {
   name: string;
@@ -31,40 +19,51 @@ export interface PostRequestDTO {
 export class PostService {
   private apiUrl = environment.apiUrl;
   private readonly baseEndpoint = '/api/v1/posts';
+  private readonly adminEndpoint = '/api/v1/admin/posts';
 
   constructor(private http: HttpClient) {}
 
-  getPosts(): Observable<PostDTO[]> {
+  getPosts(): Observable<Post[]> {
     return this.http
-      .get<ApiResponse<PostDTO[]>>(
+      .get<ApiResponse<Post[]>>(
         `${this.apiUrl}${this.baseEndpoint}`,
         { headers: { 'Accept': 'application/json' } }
       )
       .pipe(map((response) => response.data || []));
   }
 
-  getPostById(id: string): Observable<PostDTO> {
+  // Get all posts for admin (including inactive)
+  getAdminPosts(): Observable<Post[]> {
     return this.http
-      .get<ApiResponse<PostDTO>>(
+      .get<ApiResponse<Post[]>>(
+        `${this.apiUrl}${this.adminEndpoint}`,
+        { headers: { 'Accept': 'application/json' } }
+      )
+      .pipe(map((response) => response.data || []));
+  }
+
+  getPostById(id: string): Observable<Post> {
+    return this.http
+      .get<ApiResponse<Post>>(
         `${this.apiUrl}${this.baseEndpoint}/${id}`,
         { headers: { 'Accept': 'application/json' } }
       )
       .pipe(map((response) => response.data!));
   }
 
-  createPost(data: PostRequestDTO): Observable<PostDTO> {
+  createPost(data: PostRequestDTO): Observable<Post> {
     return this.http
-      .post<ApiResponse<PostDTO>>(
-        `${this.apiUrl}${this.baseEndpoint}/create`,
+      .post<ApiResponse<Post>>(
+        `${this.apiUrl}${this.baseEndpoint}`,
         data,
         { headers: { 'Accept': 'application/json' } }
       )
       .pipe(map((response) => response.data!));
   }
 
-  updatePost(id: string, data: PostRequestDTO): Observable<PostDTO> {
+  updatePost(id: string, data: PostRequestDTO): Observable<Post> {
     return this.http
-      .put<ApiResponse<PostDTO>>(
+      .put<ApiResponse<Post>>(
         `${this.apiUrl}${this.baseEndpoint}/${id}`,
         data,
         { headers: { 'Accept': 'application/json' } }
@@ -81,19 +80,19 @@ export class PostService {
       .pipe(map(() => undefined));
   }
 
-  activatePost(id: string): Observable<PostDTO> {
+  activatePost(id: string, currentStatus: boolean): Observable<Post> {
     return this.http
-      .put<ApiResponse<PostDTO>>(
-        `${this.apiUrl}${this.baseEndpoint}/activate/${id}`,
-        {},
+      .put<ApiResponse<Post>>(
+        `${this.apiUrl}${this.baseEndpoint}/${id}`,
+        { active: !currentStatus },
         { headers: { 'Accept': 'application/json' } }
       )
       .pipe(map((response) => response.data!));
   }
 
-  setPostAsRead(id: string, isRead: boolean): Observable<PostDTO> {
+  setPostAsRead(id: string, isRead: boolean): Observable<Post> {
     return this.http
-      .put<ApiResponse<PostDTO>>(
+      .put<ApiResponse<Post>>(
         `${this.apiUrl}${this.baseEndpoint}/${id}/read`,
         { read: isRead },
         { headers: { 'Accept': 'application/json' } }

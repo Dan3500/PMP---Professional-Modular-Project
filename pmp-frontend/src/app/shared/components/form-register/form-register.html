@@ -26,12 +26,12 @@
         autocomplete="email"
         (focus)="clearError()"
         required
-        placeholder="ejemplo@correo.com"
+        placeholder="example@email.com"
       />
     </div>
 
     <div class="form-group">
-      <label for="email">Repeat email</label>
+      <label for="email">Confirm email</label>
       <input
         type="email"
         (focus)="clearError()"
@@ -41,7 +41,7 @@
         [(ngModel)]="repeated_email"
         autocomplete="email"
         required
-        placeholder="ejemplo@correo.com"
+        placeholder="example@email.com"
       />
     </div>
 

@@ -283,7 +283,7 @@ frontend/
 
 ---
 
-## Week 13-14: Posts / Scalable Content 📝 (Current)
+## Week 13-14: Posts / Scalable Content 📝 (Current) ✅ COMPLETED
 
 ### Backend
 - Create `Post` entity with fields: `id`, `user_id`, `title`, `content`, `tags`, `created_at`, `updated_at`.  
@@ -298,7 +298,7 @@ frontend/
 
 ---
 
-## Week 15-16: Admin Dashboard - Posts Management 📝
+## Week 15-16: Admin Dashboard - Posts Management 📝 ✅ COMPLETED
 
 ### Integration
 - Connect frontend and backend via REST API.  

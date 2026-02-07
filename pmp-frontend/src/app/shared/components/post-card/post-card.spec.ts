@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PostDataTable } from './post';
+import { PostCard } from './post-card';
 
-describe('Post', () => {
-  let component: PostDataTable;
-  let fixture: ComponentFixture<PostDataTable>;
+describe('PostCard', () => {
+  let component: PostCard;
+  let fixture: ComponentFixture<PostCard>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PostDataTable]
+      imports: [PostCard]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PostDataTable);
+    fixture = TestBed.createComponent(PostCard);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

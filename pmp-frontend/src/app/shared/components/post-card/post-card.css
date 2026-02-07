@@ -1,0 +1,333 @@
+.post-card {
+  background: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+}
+
+.post-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #0ea5e9);
+}
+
+.post-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.post-creator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 200px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.post-creator:hover {
+  opacity: 0.8;
+  transform: translateX(2px);
+}
+
+.creator-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.post-creator:hover .creator-avatar {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.creator-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.creator-name {
+  margin: 0;
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 1rem;
+}
+
+.creator-email {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.post-date {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #ccc;
+  white-space: nowrap;
+}
+
+.post-content {
+  margin-bottom: 1.25rem;
+  padding: 0 0.5rem;
+}
+
+.post-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.3rem;
+  color: #1a1a2e;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.post-message {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.post-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.edit-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35), 0 1px 3px rgba(59, 130, 246, 0.2);
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.edit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.edit-btn:hover {
+  transform: translateY(-3px) translateX(2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.45), 0 2px 8px rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+}
+
+.edit-btn:hover::before {
+  left: 100%;
+}
+
+.edit-btn:active {
+  transform: translateY(-1px) translateX(1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+.edit-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.edit-btn:hover .edit-icon {
+  transform: rotate(5deg) scale(1.1);
+}
+
+.edit-text {
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35), 0 1px 3px rgba(239, 68, 68, 0.2);
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.delete-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.delete-btn:hover {
+  transform: translateY(-3px) translateX(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.45), 0 2px 8px rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+.delete-btn:hover::before {
+  left: 100%;
+}
+
+.delete-btn:active {
+  transform: translateY(-1px) translateX(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+
+.delete-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.delete-btn:hover .delete-icon {
+  transform: rotate(-5deg) scale(1.1);
+}
+
+.delete-text {
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 480px) {
+  .edit-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+  
+  .delete-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+  
+  .edit-icon,
+  .delete-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .post-header,
+  .post-actions {
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    border-bottom-width: 1px;
+    border-top-width: 1px;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-card {
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+  }
+  
+  .post-card::before {
+    height: 2px;
+  }
+  
+  .post-title {
+    font-size: 1.1rem;
+  }
+  
+  .post-message {
+    font-size: 0.9rem;
+  }
+  
+  .creator-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 0.95rem;
+  }
+  
+  .creator-name {
+    font-size: 0.95rem;
+  }
+  
+  .creator-email {
+    font-size: 0.8rem;
+  }
+  
+  .edit-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .post-header,
+  .post-actions {
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+    border-bottom-width: 1px;
+    border-top-width: 1px;
+  }
+}

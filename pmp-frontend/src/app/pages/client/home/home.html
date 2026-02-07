@@ -1,26 +1,82 @@
 <app-header></app-header>
 <div class="home-container">
-  <h1>Welcome to Home</h1>
   @if (!auth.isAuthenticated()) {
-      <button class="open-login-btn" (click)="toggleLogin()">Log in</button>
-      <!-- Modal -->
-      @if (showLogin) {
-        <div class="modal-backdrop" (click)="toggleLogin()"></div>
-        
-        <div class="modal" [class.ng-animate]="showLogin">
-            <app-form-login (login)="handleLogin($event)"></app-form-login>
+    <div class="welcome-section">
+      <div class="welcome-content">
+        <h1>Welcome to PMP</h1>
+        <p class="subtitle">Developed by an experienced web programmer. Discover my programming and development skills for the best solutions</p>
+        <div class="auth-buttons">
+          <button class="open-login-btn" (click)="toggleLogin()">Log in</button>
+          <button class="open-register-btn" (click)="toggleRegister()">Register</button>
         </div>
-      }
-
-      <button class="open-register-btn" (click)="toggleRegister()">Register</button>
-      <!-- Modal -->
-      @if (showRegister) {
-        <div class="modal-backdrop" (click)="toggleRegister()"></div>
-        
-        <div class="modal" [class.ng-animate]="showRegister">
-            <app-form-register (register)="onRegister($event)"></app-form-register>
+      </div>
+      <div class="user-stats">
+        <div class="stat-card">
+          <mat-icon class="stat-icon">code</mat-icon>
+          <p>Full Stack Web Developer</p>
         </div>
-      }
+        <div class="stat-card">
+          <mat-icon class="stat-icon">architecture</mat-icon>
+          <p>Modern Architecture & Design</p>
+        </div>
+        <div class="stat-card">
+          <mat-icon class="stat-icon">lightbulb</mat-icon>
+          <p>Innovative Solutions</p>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="welcome-section authenticated">
+      <div class="user-welcome">
+        <div class="welcome-header">
+          <h1>Hello, {{ auth.user()?.name }}!</h1>
+          <p class="welcome-message">Discover my programming and development skills for the best business solutions</p>
+        </div>
+        <div class="user-stats">
+          <div class="stat-card">
+            <mat-icon class="stat-icon">code</mat-icon>
+            <p>Full Stack Web Developer</p>
+          </div>
+          <div class="stat-card">
+            <mat-icon class="stat-icon">architecture</mat-icon>
+            <p>Modern Architecture & Design</p>
+          </div>
+          <div class="stat-card">
+            <mat-icon class="stat-icon">lightbulb</mat-icon>
+            <p>Innovative Solutions</p>
+          </div>
+        </div>
+      </div>
+    </div>
   }
+
+  <!-- Modal -->
+  @if (showLogin) {
+    <div class="modal-backdrop" (click)="toggleLogin()"></div>
+    
+    <div class="modal" [class.ng-animate]="showLogin">
+      <button class="modal-close-btn" (click)="toggleLogin()" title="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+      <app-form-login (login)="handleLogin($event)"></app-form-login>
+    </div>
+  }
+
+  <!-- Modal -->
+  @if (showRegister) {
+    <div class="modal-backdrop" (click)="toggleRegister()"></div>
+    
+    <div class="modal" [class.ng-animate]="showRegister">
+      <button class="modal-close-btn" (click)="toggleRegister()" title="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+      <app-form-register (register)="onRegister($event)"></app-form-register>
+    </div>
+  }
+
+  <!-- Posts Listings for all users -->
+  <div class="posts-section">
+    <app-post-listings></app-post-listings>
+  </div>
 </div>
 <app-footer></app-footer>

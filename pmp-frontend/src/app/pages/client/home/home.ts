@@ -5,11 +5,13 @@ import { Footer } from '../_components/footer/footer';
 import { FormLogin } from '../../../shared/components/form-login/form-login';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormRegister } from '../../../shared/components/form-register/form-register';
+import { PostListings } from '../../../shared/components/post-listings/post-listings';
+import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Header, Footer, FormLogin, FormRegister],
+  imports: [CommonModule, Header, Footer, FormLogin, FormRegister, PostListings, MatIconModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -24,11 +26,13 @@ export class Home {
    */
   toggleLogin() {
     this.showLogin = !this.showLogin;
+    this.updateBodyScroll();
   }
 
   handleLogin(event: boolean) {
     if (event){
       this.showLogin = false;
+      this.updateBodyScroll();
 
       Swal.fire({
         icon: 'success',
@@ -48,11 +52,13 @@ export class Home {
    */
   toggleRegister() {
     this.showRegister = !this.showRegister;
+    this.updateBodyScroll();
   }
 
     onRegister(event: boolean) {
       if (event){
         this.showRegister = false;
+        this.updateBodyScroll();
           Swal.fire({
             icon: 'success',
             title: 'Registered successfully!',
@@ -65,5 +71,16 @@ export class Home {
           });
       }
     }
+
+  /**
+   * Disable/Enable scroll when modal is open
+   */
+  private updateBodyScroll() {
+    if (this.showLogin || this.showRegister) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }
 
 }

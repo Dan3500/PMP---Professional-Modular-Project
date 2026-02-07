@@ -8,7 +8,8 @@ import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PostModalComponent } from '../../post-modal/post-modal';
-import { PostService, PostDTO } from '../../../../../core/services/post/post.service';
+import { PostService } from '../../../../../core/services/post/post.service';
+import { Post } from '../../../../../core/models/Post';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -26,7 +27,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './post.html',
   styleUrl: './post.css',
 })
-export class Post implements OnInit, AfterViewInit {
+export class PostDataTable implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'id',
     'name',
@@ -38,7 +39,7 @@ export class Post implements OnInit, AfterViewInit {
     'active',
     'actions',
   ];
-  dataSource = new MatTableDataSource<PostDTO>();
+  dataSource = new MatTableDataSource<Post>();
   isLoading = false;
   errorMessage = '';
 
@@ -61,10 +62,8 @@ export class Post implements OnInit, AfterViewInit {
     this.isLoading = true;
     this.errorMessage = '';
     try {
-      const posts = await firstValueFrom(this.postService.getPosts());
+      const posts = await firstValueFrom(this.postService.getAdminPosts());
       this.dataSource.data = posts;
-      console.log('posts :>> ', posts);
-      console.log('this.dataSource.data :>> ', this.dataSource.data);
       this.isLoading = false;
     } catch (error: any) {
       console.error('Error loading posts:', error);
@@ -73,7 +72,7 @@ export class Post implements OnInit, AfterViewInit {
     }
   }
 
-  openEditDialog(post: PostDTO) {
+  openEditDialog(post: Post) {
     const dialogRef = this.dialog.open(PostModalComponent, {
       width: '500px',
       data: post,
@@ -82,7 +81,7 @@ export class Post implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // Update post in the table
-        const index = this.dataSource.data.findIndex((p) => p.id === post.id);
+        const index = this.dataSource.data.findIndex((p) => p.id === Number(post.id));
         if (index !== -1) {
           const updatedData = [...this.dataSource.data];
           updatedData[index] = result;
@@ -111,7 +110,7 @@ export class Post implements OnInit, AfterViewInit {
       try {
         await firstValueFrom(this.postService.deletePost(postId));
         this.dataSource.data = this.dataSource.data.filter(
-          (p) => p.id !== postId
+          (p) => p.id !== Number(postId)
         );
       } catch (error: any) {
         console.error('Error deleting post:', error);
@@ -120,12 +119,12 @@ export class Post implements OnInit, AfterViewInit {
     }
   }
 
-  togglePostStatus(post: PostDTO): void {
+  togglePostStatus(post: Post): void {
     try {
-      this.postService.activatePost(post.id).subscribe({
+      this.postService.activatePost(String(post.id), post.active).subscribe({
         next: (updatedPost) => {
           // Update the post in the table
-          const index = this.dataSource.data.findIndex((p) => p.id === post.id);
+          const index = this.dataSource.data.findIndex((p) => p.id === Number(post.id));
           if (index !== -1) {
             const updatedData = [...this.dataSource.data];
             updatedData[index] = updatedPost;
@@ -143,12 +142,12 @@ export class Post implements OnInit, AfterViewInit {
     }
   }
 
-  togglePostRead(post: PostDTO): void {
+  togglePostRead(post: Post): void {
     try {
-      this.postService.setPostAsRead(post.id.toString(), !post.read).subscribe({
+      this.postService.setPostAsRead(String(post.id), !post.read).subscribe({
         next: (updatedPost) => {
           // Update the post in the table
-          const index = this.dataSource.data.findIndex((p) => p.id === post.id);
+          const index = this.dataSource.data.findIndex((p) => p.id === Number(post.id));
           if (index !== -1) {
             const updatedData = [...this.dataSource.data];
             updatedData[index] = updatedPost;

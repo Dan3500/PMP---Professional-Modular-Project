@@ -33,7 +33,7 @@ class Post
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $creator = null;
+    private ?User $creator = null;
 
     public function getId(): ?int
     {
@@ -112,12 +112,12 @@ class Post
         return $this;
     }
 
-    public function getCreator(): ?user
+    public function getCreator(): ?User
     {
         return $this->creator;
     }
 
-    public function setCreator(?user $creator): static
+    public function setCreator(?User $creator): static
     {
         $this->creator = $creator;
 

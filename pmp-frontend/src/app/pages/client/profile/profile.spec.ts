@@ -1,18 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Profile } from './profile';
 
-import { PostDataTable } from './post';
-
-describe('Post', () => {
-  let component: PostDataTable;
-  let fixture: ComponentFixture<PostDataTable>;
+describe('Profile', () => {
+  let component: Profile;
+  let fixture: ComponentFixture<Profile>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PostDataTable]
-    })
-    .compileComponents();
+      imports: [Profile],
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(PostDataTable);
+    fixture = TestBed.createComponent(Profile);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

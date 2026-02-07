@@ -1,19 +1,47 @@
 <header class="app-header">
-  <div class="logo">PMP - Professional Modular Project</div>
+  <div class="header-content">
+    <div class="logo-section">
+      <div class="logo-text">
+        <h1 class="logo">PMP</h1>
+        <p class="logo-subtitle">Professional Modular Project</p>
+      </div>
+    </div>
 
-  <nav class="nav-links">
-    <a href="#">Home</a>
-    @if (!auth.isAuthenticated()) {
-      <a [routerLink]="['login']">Login</a>
-      <a [routerLink]="['register']">Register</a>
-    }
-    @if (auth.isAuthenticated()) {
-      Hello {{ auth.getUser()?.name }}!
-      <a href="#">Profile</a>
-      <a (click)="logout()">Logout</a>
-    }
-    @if (auth.isAuthenticated() && auth.getRoles().includes('ROLE_ADMIN')) {
-      <a [routerLink]="['admin']">Admin</a>
-    } 
-  </nav>
+    <nav class="nav-links">
+      <a [routerLink]="['']"  class="nav-link home-link">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
+      
+      @if (!auth.isAuthenticated()) {
+        <a [routerLink]="['login']" class="nav-link login-link">
+          <mat-icon>lock</mat-icon>
+          <span>Login</span>
+        </a>
+        <a [routerLink]="['register']" class="nav-link register-link">
+          <mat-icon>how_to_reg</mat-icon>
+          <span>Register</span>
+        </a>
+      }
+      
+      @if (auth.isAuthenticated()) {
+        <div class="user-info" (click)="goToProfile()">
+          <mat-icon>person</mat-icon>
+          <span class="user-name">{{ auth.getUser()?.name }}</span>
+        </div>
+        
+        @if (auth.isAuthenticated() && auth.getRoles().includes('ROLE_ADMIN')) {
+          <a [routerLink]="['admin']" class="nav-link admin-link">
+            <mat-icon>settings</mat-icon>
+            <span>Admin</span>
+          </a>
+        }
+        
+        <a (click)="logout()" class="nav-link logout-link">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Logout</span>
+        </a>
+      }
+    </nav>
+  </div>
 </header>

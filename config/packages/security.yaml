@@ -31,4 +31,6 @@ security:
   access_control:
     - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/register, roles: PUBLIC_ACCESS }
+    - { path: ^/api/v1/posts$, roles: PUBLIC_ACCESS, methods: [GET] }
+    - { path: ^/api/v1/posts/\d+$, roles: PUBLIC_ACCESS, methods: [GET] }
     - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

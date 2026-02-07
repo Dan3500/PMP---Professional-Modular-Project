@@ -7,7 +7,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 class UserDTO
 
-{#[Groups(['admin:read'])]
+{#[Groups(['user:read', 'admin:read'])]
     public string $id;
 
     #[Groups(['user:read', 'admin:read'])]

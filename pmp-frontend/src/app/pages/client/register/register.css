@@ -1,0 +1,14 @@
+.register-page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+app-form-register {
+  max-width: 500px;
+  width: 100%;
+}

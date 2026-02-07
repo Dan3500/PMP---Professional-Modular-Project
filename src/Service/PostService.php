@@ -48,12 +48,21 @@ class PostService
     }
 
     /**
-     * Get all Posts
+     * Get all active Posts (public posts)
      * @return Post[]
      */
     public function getAllPosts(): array
     {
-        return $this->postRepository->findAll();
+        return $this->postRepository->findBy(['active' => true], ['created_at' => 'DESC']);
+    }
+
+    /**
+     * Get all Posts (for admin)
+     * @return Post[]
+     */
+    public function getAllPostsForAdmin(): array
+    {
+        return $this->postRepository->findBy([], ['created_at' => 'DESC']);
     }
 
     public function createPost(array $data): Post
@@ -86,7 +95,7 @@ class PostService
     }
 
     /**
-     * Update Post details
+     * Update Post details (including active status)
      * @param Post $post
      * @param array $data
      * @return Post
@@ -115,24 +124,6 @@ class PostService
                 $post->setCreator($creator);
             }
         }
-
-        $post->setUpdatedAt(new \DateTimeImmutable());
-        $this->postRepository->save($post, true);
-
-        return $post;
-    }
-
-
-    /**
-     * Active/Deactivate Post
-     * @param Post $post
-     * @param array $data
-     * @return Post
-     */
-    public function activePost(Post $post, array $data = []): Post
-    {
-        // Toggle active status
-        $post->setActive(!$post->isActive());
 
         $post->setUpdatedAt(new \DateTimeImmutable());
         $this->postRepository->save($post, true);

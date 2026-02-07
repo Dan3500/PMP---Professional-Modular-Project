@@ -62,8 +62,6 @@ export class User implements OnInit, AfterViewInit {
     try {
       const users = await firstValueFrom(this.userService.getUsers());
       this.dataSource.data = users;
-      console.log('users :>> ', users);
-      console.log('this.dataSource.data :>> ', this.dataSource.data);
       this.isLoading = false;
     } catch (error: any) {
       console.error('Error loading users:', error);
