@@ -45,7 +45,7 @@ class PostController extends AbstractController
         ], 200, [], ['groups' => ['post:read']]);
     }
 
-    #[Route('/v1/posts/{id}', name: 'api_post_get_by_id', methods: ['GET'])]
+    #[Route('/v1/posts/{id}', name: 'api_post_get_by_id', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function getPostById(int $id): JsonResponse
     {
         // Search for post by id; return 404 if not found
@@ -63,6 +63,20 @@ class PostController extends AbstractController
             'success' => true,
             'data' => $postDto,
             'message' => 'Post retrieved successfully'
+        ], 200, [], ['groups' => ['post:read']]);
+    }
+
+    #[Route('/v1/users/{userId}/posts', name: 'api_user_posts', methods: ['GET'])]
+    public function getPostsByUserId(int $userId): JsonResponse
+    {
+        // Get all posts by user ID
+        $posts = $this->postService->getPostsByUserId($userId);
+        $postDtos = array_map(fn($post) => PostDTO::fromEntity($post), $posts);
+
+        return $this->json([
+            'success' => true,
+            'data' => $postDtos,
+            'message' => 'User posts retrieved successfully'
         ], 200, [], ['groups' => ['post:read']]);
     }
 

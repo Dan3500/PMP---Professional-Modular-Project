@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
+import { PostService } from '../../../core/services/post/post.service';
+import { UserService } from '../../../core/services/user/user.service';
 import { PostCard } from '../../../shared/components/post-card/post-card';
 import { PostEditModal } from '../../../shared/components/post-edit-modal/post-edit-modal';
 import { Post } from '../../../core/models/Post';
@@ -32,6 +34,8 @@ interface UserProfile {
 })
 export class Profile implements OnInit, OnDestroy {
   private authService = inject(AuthService);
+  private postService = inject(PostService);
+  private userService = inject(UserService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private destroy$ = new Subject<void>();
@@ -48,7 +52,6 @@ export class Profile implements OnInit, OnDestroy {
   editFormData = {
     name: '',
     email: '',
-    currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   };
@@ -56,7 +59,6 @@ export class Profile implements OnInit, OnDestroy {
   formErrors = {
     name: '',
     email: '',
-    currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   };
@@ -79,8 +81,9 @@ export class Profile implements OnInit, OnDestroy {
 
   loadUserProfile(userId: number) {
     this.isLoading.set(true);
-    // Simulando la carga del perfil - En producción, usarías un servicio
     const currentUser = this.authService.getUser();
+    
+    // If viewing own profile, use local data
     if (currentUser && Number(currentUser.id) === userId) {
       this.user.set({
         id: currentUser.id,
@@ -89,30 +92,46 @@ export class Profile implements OnInit, OnDestroy {
       });
       this.editFormData.name = currentUser.name;
       this.editFormData.email = currentUser.email;
+      this.isLoading.set(false);
     } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'User not found',
-        text: 'The requested user profile does not exist'
-      });
-      this.router.navigate(['/']);
+      // Fetch other user's profile from backend
+      this.userService.getPublicUserById(userId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (userData) => {
+            this.user.set({
+              id: Number(userData.id),
+              name: userData.name,
+              email: userData.email
+            });
+            this.isLoading.set(false);
+          },
+          error: (err) => {
+            console.error('Error loading user profile:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'User not found',
+              text: 'The requested user profile does not exist'
+            });
+            this.router.navigate(['/']);
+            this.isLoading.set(false);
+          }
+        });
     }
-    this.isLoading.set(false);
   }
 
   loadUserPosts(userId: number) {
-    const currentUser = this.authService.getUser();
-    if (currentUser && Number(currentUser.id) === userId) {
-        //TODO Cargar posts del usuario desde el backend
-        const postsData = null;
-      if (postsData) {
-        try {
-          this.posts.set(JSON.parse(postsData));
-        } catch (e) {
+    this.postService.getPostsByUserId(userId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (posts) => {
+          this.posts.set(posts);
+        },
+        error: (err) => {
+          console.error('Error loading user posts:', err);
           this.posts.set([]);
         }
-      }
-    }
+      });
   }
 
   isOwnProfile(): boolean {
@@ -129,7 +148,6 @@ export class Profile implements OnInit, OnDestroy {
     this.formErrors = {
       name: '',
       email: '',
-      currentPassword: '',
       newPassword: '',
       confirmPassword: ''
     };
@@ -155,12 +173,8 @@ export class Profile implements OnInit, OnDestroy {
       isValid = false;
     }
 
-    // Si quiere cambiar contraseña
+    // If user wants to change password
     if (this.editFormData.newPassword) {
-      if (!this.editFormData.currentPassword) {
-        this.formErrors.currentPassword = 'Current password is required';
-        isValid = false;
-      }
       if (this.editFormData.newPassword.length < 8) {
         this.formErrors.newPassword = 'New password must be at least 8 characters';
         isValid = false;
@@ -179,99 +193,153 @@ export class Profile implements OnInit, OnDestroy {
     return pattern.test(email);
   }
 
-  async updateProfile() {
+  updateProfile() {
     if (!this.validateForm()) {
       return;
     }
 
-    try {
-      // Aquí iría la llamada al backend para actualizar el perfil
-      // Por ahora, simulamos el éxito
-      Swal.fire({
-        icon: 'success',
-        title: 'Profile updated',
-        text: 'Your profile has been updated successfully',
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true
-      });
+    const updateData: { name?: string; email?: string; password?: string } = {
+      name: this.editFormData.name,
+      email: this.editFormData.email
+    };
 
-      if (this.user()) {
-        this.user.set({
-          ...this.user()!,
-          name: this.editFormData.name,
-          email: this.editFormData.email
-        });
-      }
-
-      this.editFormData.currentPassword = '';
-      this.editFormData.newPassword = '';
-      this.editFormData.confirmPassword = '';
-      this.isEditingProfile.set(false);
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Could not update profile'
-      });
+    // Only include password if user wants to change it
+    if (this.editFormData.newPassword) {
+      updateData.password = this.editFormData.newPassword;
     }
+
+    this.authService.updateProfile(updateData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          // If server returns a new token, update it
+          if (response.token) {
+            this.authService.setToken(response.token);
+          }
+          
+          // Update local user with new data
+          this.authService.updateLocalUser({
+            name: this.editFormData.name,
+            email: this.editFormData.email
+          });
+
+          if (this.user()) {
+            this.user.set({
+              ...this.user()!,
+              name: this.editFormData.name,
+              email: this.editFormData.email
+            });
+          }
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Profile updated',
+            text: 'Your profile has been updated successfully',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+          });
+
+          this.editFormData.newPassword = '';
+          this.editFormData.confirmPassword = '';
+          this.isEditingProfile.set(false);
+        },
+        error: (error) => {
+          console.error('Error updating profile:', error);
+          let errorMessage = 'Could not update profile';
+          
+          if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.status === 409) {
+            errorMessage = 'This email is already in use';
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage
+          });
+        }
+      });
   }
 
   createNewPost() {
     Swal.fire({
-      title: 'Create new post',
+      title: 'Create New Post',
       html: `
-        <textarea id="postTitle" class="swal2-textarea" placeholder="Post title" maxlength="255" style="width: 100%; margin-bottom: 10px;"></textarea>
-        <textarea id="postContent" class="swal2-textarea" placeholder="Post content" maxlength="1000" style="width: 100%; height: 150px;"></textarea>
+        <div class="swal-post-form">
+          <div class="swal-form-group">
+            <label for="postTitle">Title</label>
+            <input id="postTitle" class="swal-form-input" type="text" placeholder="Enter post title" maxlength="255" />
+          </div>
+          <div class="swal-form-group">
+            <label for="postContent">Message</label>
+            <textarea id="postContent" class="swal-form-textarea" placeholder="Write your message here..." maxlength="1000" rows="6"></textarea>
+            <span class="swal-char-count"><span id="charCount">0</span>/1000</span>
+          </div>
+        </div>
       `,
-      confirmButtonText: 'Create',
+      confirmButtonText: 'Create Post',
       cancelButtonText: 'Cancel',
       showCancelButton: true,
-      confirmButtonColor: '#3b82f6'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const title = (document.getElementById('postTitle') as HTMLTextAreaElement)?.value || '';
-        const content = (document.getElementById('postContent') as HTMLTextAreaElement)?.value || '';
-
-        if (!title.trim() || !content.trim()) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Title and content are required'
+      customClass: {
+        popup: 'swal-post-popup',
+        title: 'swal-post-title',
+        htmlContainer: 'swal-post-container',
+        confirmButton: 'swal-post-confirm',
+        cancelButton: 'swal-post-cancel',
+        actions: 'swal-post-actions'
+      },
+      didOpen: () => {
+        const textarea = document.getElementById('postContent') as HTMLTextAreaElement;
+        const charCount = document.getElementById('charCount');
+        if (textarea && charCount) {
+          textarea.addEventListener('input', () => {
+            charCount.textContent = String(textarea.value.length);
           });
-          return;
         }
+      },
+      preConfirm: () => {
+        const title = (document.getElementById('postTitle') as HTMLInputElement)?.value || '';
+        const content = (document.getElementById('postContent') as HTMLTextAreaElement)?.value || '';
+        
+        if (!title.trim() || !content.trim()) {
+          Swal.showValidationMessage('Title and message are required');
+          return false;
+        }
+        return { title, content };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const { title, content } = result.value;
 
-        // Aquí iría la llamada al backend para crear el post
-        const newPost: Post = {
-          id: Date.now(),
+        this.postService.createPost({
           name: title,
-          message: content,
-          read: false,
-          active: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          creator: {
-            id: this.userId()!,
-            name: this.user()?.name || 'Unknown',
-            email: this.user()?.email || ''
+          message: content
+        }).subscribe({
+          next: (createdPost) => {
+            this.posts.set([createdPost, ...this.posts()]);
+            Swal.fire({
+              icon: 'success',
+              title: 'Post created!',
+              text: 'Your post has been published successfully',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true
+            });
+          },
+          error: (err) => {
+            console.error('Error creating post:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Could not create the post. Please try again.'
+            });
           }
-        };
-
-        // Agregar a la lista local
-        this.posts.set([newPost, ...this.posts()]);
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Post created',
-          text: 'Your post has been created successfully',
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true
         });
       }
     });
@@ -296,20 +364,10 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   onDeletePost(postId: number) {
+    // Only updates local UI - post-card already called backend and showed the message
     const currentPosts = this.posts();
     const filteredPosts = currentPosts.filter(p => p.id !== postId);
     this.posts.set(filteredPosts);
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Deleted',
-      text: 'Post deleted successfully',
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true
-    });
   }
 
   getAvatarColor(): string {

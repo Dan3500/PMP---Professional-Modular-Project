@@ -51,6 +51,15 @@ export class PostService {
       .pipe(map((response) => response.data!));
   }
 
+  getPostsByUserId(userId: number): Observable<Post[]> {
+    return this.http
+      .get<ApiResponse<Post[]>>(
+        `${this.apiUrl}/api/v1/users/${userId}/posts`,
+        { headers: { 'Accept': 'application/json' } }
+      )
+      .pipe(map((response) => response.data || []));
+  }
+
   createPost(data: PostRequestDTO): Observable<Post> {
     return this.http
       .post<ApiResponse<Post>>(

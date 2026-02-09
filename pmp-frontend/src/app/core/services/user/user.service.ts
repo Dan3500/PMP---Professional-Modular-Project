@@ -35,8 +35,19 @@ export interface UpdateUserDTO {
 export class UserService {
   private apiUrl = environment.apiUrl;
   private readonly baseEndpoint = '/api/v1/admin/user';
+  private readonly publicEndpoint = '/api/v1/users';
 
   constructor(private http: HttpClient) {}
+
+  // Public endpoint - get any user's profile by ID
+  getPublicUserById(id: number): Observable<UserDTO> {
+    return this.http
+      .get<ApiResponse<UserDTO>>(
+        `${this.apiUrl}${this.publicEndpoint}/${id}`,
+        { headers: { 'Accept': 'application/json' } }
+      )
+      .pipe(map((response) => response.data!));
+  }
 
   getUsers(): Observable<UserDTO[]> {
     return this.http

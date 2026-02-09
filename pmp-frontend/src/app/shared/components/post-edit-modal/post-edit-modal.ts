@@ -26,7 +26,7 @@ export class PostEditModal {
   isLoading = false;
 
   ngOnInit() {
-    // Inicializar el formulario con los datos del post
+    // Initialize form with post data
     this.formData.name = this.post.name;
     this.formData.message = this.post.message;
   }
@@ -36,12 +36,12 @@ export class PostEditModal {
   }
 
   onSubmit() {
-    // Validación básica
+    // Basic validation
     if (!this.formData.name.trim() || !this.formData.message.trim()) {
       Swal.fire({
         icon: 'warning',
-        title: 'Campos requeridos',
-        text: 'Por favor completa todos los campos',
+        title: 'Required fields',
+        text: 'Please fill in all fields',
         toast: true,
         position: 'top-end',
         showConfirmButton: false,
@@ -60,8 +60,8 @@ export class PostEditModal {
         this.isLoading = false;
         Swal.fire({
           icon: 'success',
-          title: 'Post actualizado',
-          text: 'Tu post ha sido actualizado exitosamente',
+          title: 'Post updated',
+          text: 'Your post has been updated successfully',
           toast: true,
           position: 'top-end',
           showConfirmButton: false,
@@ -75,7 +75,7 @@ export class PostEditModal {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo actualizar el post',
+          text: 'Could not update the post',
           toast: true,
           position: 'top-end',
           showConfirmButton: false,

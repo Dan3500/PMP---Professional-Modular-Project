@@ -55,7 +55,7 @@ export class PostListings implements OnInit {
   onPostEditingClosed(updatedPost?: Post) {
     this.selectedPostToEdit.set(null);
     
-    // Si hay un post actualizado, solo actualizar ese en lugar de recargar todo
+    // If there's an updated post, only update that one instead of reloading all
     if (updatedPost) {
       this.isUpdatingPost.set(true);
       setTimeout(() => {
@@ -72,12 +72,12 @@ export class PostListings implements OnInit {
   }
 
   onDeletePost(postId: number) {
-    // Eliminar el post de la lista local
+    // Remove post from local list
     const currentPosts = this.posts();
     const filteredPosts = currentPosts.filter(p => p.id !== postId);
     this.posts.set(filteredPosts);
     
-    // Mostrar mensaje de éxito
+    // Show success message
     Swal.fire({
       icon: 'success',
       title: 'Deleted',

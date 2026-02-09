@@ -57,6 +57,16 @@ class PostService
     }
 
     /**
+     * Get Posts by user ID (creator)
+     * @param int $userId
+     * @return Post[]
+     */
+    public function getPostsByUserId(int $userId): array
+    {
+        return $this->postRepository->findByCreatorId($userId);
+    }
+
+    /**
      * Get all Posts (for admin)
      * @return Post[]
      */

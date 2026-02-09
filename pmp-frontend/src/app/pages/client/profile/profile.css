@@ -141,31 +141,118 @@
   height: 1.25rem;
 }
 
-/* Edit Profile Section */
-.edit-profile-section {
+/* Edit Profile Modal */
+.edit-profile-modal {
+  max-width: 500px;
+}
+
+.edit-profile-modal .edit-modal-content {
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  padding: 2.5rem;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
-  margin-bottom: 2rem;
+  box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15), 0 0 40px rgba(14, 165, 233, 0.1);
+  width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
-.edit-profile-section h2 {
-  margin: 0 0 1.5rem 0;
-  font-size: 1.75rem;
-  color: #333;
+.edit-profile-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+  border-bottom: none;
+}
+
+.edit-profile-modal .modal-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: white;
   font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
-.edit-profile-section h3 {
-  margin: 2rem 0 1rem 0;
-  font-size: 1.2rem;
-  color: #333;
-  font-weight: 600;
+.edit-profile-modal .close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: white;
+  padding: 0.5rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  border-radius: 8px;
+}
+
+.edit-profile-modal .close-btn:hover {
+  color: #ef4444;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.edit-profile-modal .edit-form {
+  padding: 1.75rem;
+}
+
+.form-divider-section {
+  margin: 1rem 0 0.5rem 0;
+  padding-top: 1rem;
   border-top: 1px solid #e0e0e0;
-  padding-top: 2rem;
+}
+
+.form-divider-section h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.edit-profile-modal .modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.cancel-btn,
+.submit-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 2px solid #e0e0e0;
+}
+
+.cancel-btn:hover {
+  background-color: #e8e8e8;
+  border-color: #d0d0d0;
+  transform: translateY(-2px);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45);
 }
 
 .edit-form {
@@ -220,51 +307,6 @@
   border: none;
   border-top: 1px solid #e0e0e0;
   margin: 1rem 0;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e0e0e0;
-}
-
-.btn-cancel,
-.btn-save {
-  padding: 0.85rem 2rem;
-  border: none;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-
-.btn-cancel {
-  background-color: #f0f0f0;
-  color: #333;
-  border: 2px solid #e0e0e0;
-}
-
-.btn-cancel:hover {
-  background-color: #e8e8e8;
-  border-color: #d0d0d0;
-  transform: translateY(-2px);
-}
-
-.btn-save {
-  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
-}
-
-.btn-save:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45);
 }
 
 /* Posts Section */
@@ -378,16 +420,16 @@
     gap: 1rem;
   }
 
-  .edit-profile-section {
-    padding: 1.5rem;
+  .edit-profile-modal .edit-form {
+    padding: 1.25rem;
   }
 
-  .form-actions {
+  .edit-profile-modal .modal-actions {
     flex-direction: column;
   }
 
-  .btn-cancel,
-  .btn-save {
+  .cancel-btn,
+  .submit-btn {
     width: 100%;
   }
 }

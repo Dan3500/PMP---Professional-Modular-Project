@@ -83,7 +83,7 @@ export class PostCard {
   }
 
   getAvatarColor(): string {
-    // Generar color basado en el hash del email del creator
+    // Generate color based on creator's email hash
     let hash = 0;
     const email = this.post.creator.email;
     for (let i = 0; i < email.length; i++) {

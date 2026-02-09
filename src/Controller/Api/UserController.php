@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\DTO\UserDTO;
 use App\Repository\UserRepository;
 use App\Service\UserService;
+use App\Security\JwtTokenGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +27,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 class UserController extends AbstractController
 {
-    public function __construct(private UserService $userService)
+    public function __construct(
+        private UserService $userService,
+        private JwtTokenGenerator $jwtTokenGenerator
+    )
     {
     }
 
@@ -58,10 +62,36 @@ class UserController extends AbstractController
         // Delegate update logic to the service (encapsulates validations/transformations)
         $updated = $this->userService->updateUser($user, $data);
         $userDto = UserDTO::fromEntity($updated);
+        
+        // Generate new JWT token with updated user data
+        $newToken = $this->jwtTokenGenerator->generateToken($updated);
+        
         return $this->json([
             'success' => true,
             'data' => $userDto,
+            'token' => $newToken,
             'message' => 'Profile updated successfully'
+        ], 200, [], ['groups' => ['user:read']]);
+    }
+
+    // Public endpoint to get any user's profile by ID
+    #[Route('/v1/users/{id}', name: 'api_user_get_public', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function getPublicUserById(int $id, UserRepository $repo): JsonResponse
+    {
+        $user = $repo->find($id);
+        if (!$user || !$user->isActive()) {
+            return $this->json([
+                'success' => false,
+                'data' => null,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        $userDto = UserDTO::fromEntity($user);
+        return $this->json([
+            'success' => true,
+            'data' => $userDto,
+            'message' => 'User retrieved successfully'
         ], 200, [], ['groups' => ['user:read']]);
     }
 

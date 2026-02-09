@@ -168,4 +168,26 @@ export class AuthService {
   register(form:RegisterFormModel) {
     return this._http.post<ApiResponse<RegisterResponse>>(`${this.apiUrl}/v1/register`, form);
   }
+
+  /**
+   * Method to update the user profile
+   * @param data: Object with name, email, and optionally password
+   * @returns ApiResponse Server response with updated user data
+   */
+  updateProfile(data: { name?: string; email?: string; password?: string }) {
+    return this._http.put<ApiResponse<User>>(`${this.apiUrl}/api/users/me`, data);
+  }
+
+  /**
+   * Method to update the local user data after profile update
+   * @param updates: Partial user data to merge
+   */
+  updateLocalUser(updates: Partial<User>): void {
+    const currentUser = this._user();
+    if (currentUser) {
+      const updatedUser = { ...currentUser, ...updates };
+      this._user.set(updatedUser);
+      localStorage.setItem('user_data', JSON.stringify(updatedUser));
+    }
+  }
 }
